@@ -1,7 +1,6 @@
 package org.example.services;
 
-import org.example.User;
-import org.example.services.UserService;
+import org.example.models.User;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -10,13 +9,17 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+import java.util.Optional;
+
+
 class UserServiceTest {
+    private static final User MISHA = User.of(1, "Misha", "111");
+    private static final User HANNA = User.of(2, "Hanna", "222");
     UserService userService;
 
     @BeforeAll
-    void beforeClass(){
-        System.out.println("before class: " +  this.toString());
+    static void beforeClass(){
+        System.out.println("before class: ");
     }
 
     @BeforeEach
@@ -33,10 +36,31 @@ class UserServiceTest {
 
     @Test
     void userAddingTest(){
-        userService.add(new User(1,"Misha"));
-        userService.add(new User(2,"Hanna"));
+        userService.add(MISHA);
+        userService.add(HANNA);
         var all = userService.getAll();
         Assertions.assertEquals(2,all.size());
+    }
+    @Test
+    void loginSuccessIfUserExist(){
+        userService.add(MISHA);
+
+        Optional<User> maybeUser=userService.login(MISHA.getUserName(),MISHA.getPassword());
+        maybeUser.ifPresent(user->Assertions.assertEquals(MISHA,user));
+    }
+    @Test
+    void loginFailedIfPasswordIncorrect(){
+        userService.add(MISHA);
+
+        Optional<User> maybeUser=userService.login(MISHA.getUserName(),"dummy");
+        Assertions.assertTrue(maybeUser.isEmpty());
+    }
+    @Test
+    void loginFailedIfUserNameIncorrect(){
+        userService.add(MISHA);
+
+        Optional<User> maybeUser=userService.login("dummy",MISHA.getPassword());
+        Assertions.assertTrue(maybeUser.isEmpty());
     }
 
     @AfterEach
@@ -46,7 +70,7 @@ class UserServiceTest {
     }
 
     @AfterAll
-    void afterAll(){
-        System.out.println("After all:" + this.toString());
+    static void afterAll(){
+        System.out.println("After all:" );
     }
 }
