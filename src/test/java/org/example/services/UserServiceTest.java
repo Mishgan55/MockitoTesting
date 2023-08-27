@@ -9,7 +9,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 
+import java.util.Map;
 import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 
 class UserServiceTest {
@@ -31,7 +35,7 @@ class UserServiceTest {
     @Test
     void ifUserIsEmpty(){
         var all = userService.getAll();
-        Assertions.assertTrue(all.isEmpty());
+        assertTrue(all.isEmpty());
     }
 
     @Test
@@ -39,28 +43,43 @@ class UserServiceTest {
         userService.add(MISHA);
         userService.add(HANNA);
         var all = userService.getAll();
-        Assertions.assertEquals(2,all.size());
+        assertThat(all).hasSize(2);
+//        assertEquals(2,all.size());
     }
     @Test
     void loginSuccessIfUserExist(){
         userService.add(MISHA);
 
         Optional<User> maybeUser=userService.login(MISHA.getUserName(),MISHA.getPassword());
-        maybeUser.ifPresent(user->Assertions.assertEquals(MISHA,user));
+
+        assertThat(maybeUser).isPresent();
+        maybeUser.ifPresent(user->assertThat(user).isEqualTo(MISHA));
+//        maybeUser.ifPresent(user-> assertEquals(MISHA,user));
+    }
+    @Test
+    void convertedToMapID(){
+        userService.add(MISHA,HANNA);
+        Map<Integer, User> map=userService.getAllConvertedMap();
+
+        assertAll(
+                ()->assertThat(map).containsKeys(MISHA.getId(),HANNA.getId()),
+                ()->assertThat(map).containsValues(MISHA,HANNA)
+
+        );
     }
     @Test
     void loginFailedIfPasswordIncorrect(){
         userService.add(MISHA);
 
         Optional<User> maybeUser=userService.login(MISHA.getUserName(),"dummy");
-        Assertions.assertTrue(maybeUser.isEmpty());
+        assertTrue(maybeUser.isEmpty());
     }
     @Test
     void loginFailedIfUserNameIncorrect(){
         userService.add(MISHA);
 
         Optional<User> maybeUser=userService.login("dummy",MISHA.getPassword());
-        Assertions.assertTrue(maybeUser.isEmpty());
+        assertTrue(maybeUser.isEmpty());
     }
 
     @AfterEach
