@@ -57,6 +57,16 @@ class UserServiceTest {
 //        maybeUser.ifPresent(user-> assertEquals(MISHA,user));
     }
     @Test
+    void exceptionIfUserNameOrPasswordIsNull(){
+        assertAll(
+                ()->{var e=assertThrows(IllegalArgumentException.class,()->userService.login("dummy",null));
+                    assertThat(e).hasMessage("login or password is null");
+                },
+                ()->assertThrows(IllegalArgumentException.class,()->userService.login(null,"dummy"))
+
+        );
+    }
+    @Test
     void convertedToMapID(){
         userService.add(MISHA,HANNA);
         Map<Integer, User> map=userService.getAllConvertedMap();
