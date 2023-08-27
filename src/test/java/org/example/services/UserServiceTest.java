@@ -6,6 +6,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 
@@ -47,6 +48,7 @@ class UserServiceTest {
 //        assertEquals(2,all.size());
     }
     @Test
+    @Tag("login")
     void loginSuccessIfUserExist(){
         userService.add(MISHA);
 
@@ -57,6 +59,7 @@ class UserServiceTest {
 //        maybeUser.ifPresent(user-> assertEquals(MISHA,user));
     }
     @Test
+    @Tag("login")
     void exceptionIfUserNameOrPasswordIsNull(){
         assertAll(
                 ()->{var e=assertThrows(IllegalArgumentException.class,()->userService.login("dummy",null));
@@ -78,6 +81,7 @@ class UserServiceTest {
         );
     }
     @Test
+    @Tag("login")
     void loginFailedIfPasswordIncorrect(){
         userService.add(MISHA);
 
@@ -85,6 +89,7 @@ class UserServiceTest {
         assertTrue(maybeUser.isEmpty());
     }
     @Test
+    @Tag("login")
     void loginFailedIfUserNameIncorrect(){
         userService.add(MISHA);
 
